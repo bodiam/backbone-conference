@@ -1,0 +1,71 @@
+<html>
+<head>
+	<link href='http://fonts.googleapis.com/css?family=Alfa+Slab+One|Roboto+Slab:300,400,700|Roboto:300,300italic,700,700italic' rel='stylesheet' type='text/css'>
+
+	<script type="text/javascript" src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+	<script type="text/javascript" src="http://underscorejs.org/underscore.js"></script>
+	<script type="text/javascript" src="http://backbonejs.org/backbone.js"></script>
+        <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/backbone-localstorage.js/1.1.13/backbone.localStorage.js"></script>
+	<script src="conference.js"></script>
+        <link rel="stylesheet" href="conferences.css"/>
+
+</head>
+<body>
+
+  <div id="conferenceapp">
+
+    <header>
+      <h1>Conference</h1>
+      <input id="new-session" type="text" placeholder="Session name">
+    </header>
+
+    <section id="main">
+      <input id="toggle-all" type="checkbox">
+      <label for="toggle-all">Mark all as complete</label>
+      <ul id="session-list"></ul>
+    </section>
+
+    <footer>
+      <a id="clear-completed">Clear completed</a>
+      <div id="session-count"></div>
+    </footer>
+
+  </div>
+
+  <!-- Templates -->
+
+  <script type="text/template" id="session-template">
+    <div class="view">
+      <input class="toggle" type="checkbox" <%= done ? 'checked="checked"' : '' %> />
+      <label><%- title %></label>
+      <a class="destroy"></a>
+    </div>
+    <input class="edit" type="text" value="<%- title %>" />
+  </script>
+
+  <script type="text/template" id="stats-template">
+    <% if (done) { %>
+      <a id="clear-completed">Clear <%= done %> completed <%= done == 1 ? 'item' : 'items' %></a>
+    <% } %>
+    <div class="session-count"><b><%= remaining %></b> <%= remaining == 1 ? 'item' : 'items' %> left</div>
+  </script>
+
+<!--
+
+todo:
+- add session
+- sort session
+- find remaining sessions ( which have not happened yet)
+- render session
+- render list of sessions
+- render list of sessions with dates
+- render list of sessions with dates based on conference details
+- fun and profit
+
+-->
+
+
+
+
+</body>
+</html>

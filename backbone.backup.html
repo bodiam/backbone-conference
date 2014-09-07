@@ -1,0 +1,153 @@
+<html>
+<head>
+	<link href='http://fonts.googleapis.com/css?family=Alfa+Slab+One|Roboto+Slab:300,400,700|Roboto:300,300italic,700,700italic' rel='stylesheet' type='text/css'>
+
+	<script type="text/javascript" src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+	<script type="text/javascript" src="http://underscorejs.org/underscore.js"></script>
+	<script type="text/javascript" src="http://backbonejs.org/backbone.js"></script>
+
+<style>
+
+/* HTML Styles */
+body, caption, th, td, input, textarea, select, option, legend, fieldset {
+  font-family: 'Roboto', helvetica, arial, sans-serif;
+}
+
+h3 {
+  font-family: 'Roboto Slab', Georgia;
+  font-weight: 700;
+  color: #555;
+  text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.5);
+}
+
+.session {
+	border: 1px solid #ccc;
+	margin: 5px;
+	padding: 10px;
+}
+
+</style>
+</head>
+<body>
+
+
+<script type="text/template" id="show_conference">
+  <h1>Conference</h1>
+  <input type="text" id="name" placeholder="name" />
+  <input type="text" id="startdate" placeholder="startdate" />
+  <input type="text" id="enddate" placeholder="enddate" />
+  <input type="button" id="save" value="Save" />
+</script>
+
+<script type="text/template" id="session_list">
+  <h2>Sessions</h2>
+  <input type="text" id="name" placeholder="name" />
+  <input type="text" id="title" placeholder="title" />
+  <input type="text" id="startdate" placeholder="startdate" />
+  <input type="text" id="enddate" placeholder="enddate (optional)" />
+  <input type="button" id="addSession" value="Add" />
+</script>
+
+<script type="text/template" id="show_session">
+  <div class="session">
+    <h3><%= title %></h3>
+    <p><label>Speaker:</label> <%= speaker %></p>
+  </div>
+</script>
+
+<div id="container">container</div>
+<div id="session">session</div>
+
+<script type="text/javascript">
+
+var Conference = Backbone.Model.extend({});
+var Session = Backbone.Model.extend({});
+var SessionList = Backbone.Collection.extend({
+	model: Session
+});
+
+var session = new Session({speaker:'Pietje', title:'een leuk onderwerp'});
+var conference = new Conference({name:'test', description:'this is a description'});
+
+var sessionList = new SessionList();
+sessionList.reset([
+	{speaker:'Erik', title:'Groovy for Beginners'},
+	{speaker:'Lieke', title:'Pyladies Amsterdam'}
+]);
+
+
+ConferenceView = Backbone.View.extend({
+	initialize: function() {
+		this.render();
+	},
+
+        render: function(){
+            var template = _.template( $("#show_conference").html(), {} );
+	    console.log(template);
+            this.$el.html(template);
+        },
+
+        events: {
+            "click input[type=button]": "doSave"
+        },
+
+	doSave: function(event) {
+		alert( "Search for " + $("#search_input").val() );
+	}
+});
+
+SessionListView = Backbone.View.extend({
+	render: function() {
+            	var template = _.template( $("#session_list").html(), {} );
+            	this.$el.html(template);
+		this.collection.forEach(this.addOne, this);
+	},
+
+	addOne: function(session) {
+		var sessionView = new SessionView({model: session});
+		this.$el.append(sessionView.render().el);
+	}
+
+});
+
+
+SessionView = Backbone.View.extend({
+	initialize: function() {
+		this.render();
+	},	
+
+	render: function() {
+                // Compile the template using underscore
+                var template = _.template( $("#show_session").html())( this.model.toJSON() );
+                this.$el.html(template);
+		return this;
+	}
+});
+
+
+// var view = new ConferenceView({ el: $("#container") });
+ //var sessionView = new SessionView({ el: $("#session"), model:session });
+var sessionListView = new SessionListView({collection: sessionList});
+sessionListView.render();
+console.log(sessionListView.el);
+$("#session").html(sessionListView.el);
+
+</script>
+
+<!--
+
+todo:
+- add session
+- render session
+- render list of sessions
+- render list of sessions with dates
+- render list of sessions with dates based on conference details
+- fun and profit
+
+-->
+
+
+
+
+</body>
+</html>
