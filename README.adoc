@@ -1,0 +1,3 @@
+* backbone-conference
+
+Demo application to play around with BackboneJS
