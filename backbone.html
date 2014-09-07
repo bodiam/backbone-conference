@@ -9,14 +9,21 @@
 	<script src="conference.js"></script>
         <link rel="stylesheet" href="conferences.css"/>
 
+
 </head>
+<style>
+.block label { display: inline-block; width: 30%; text-align: left; }
+.block input { display: inline-block; width: 65%; }
+</style>
 <body>
 
   <div id="conferenceapp">
 
     <header>
       <h1>Conference</h1>
-      <input id="new-session" type="text" placeholder="Session name">
+      <div id="conference-details"></div>
+      <hr />
+      <input id="new-session" class="bigbox" type="text" placeholder="Session name">
     </header>
 
     <section id="main">
@@ -33,6 +40,29 @@
   </div>
 
   <!-- Templates -->
+
+  <script type="text/template" id="conference-template">
+      <div class="block">
+        <label>Name</label>
+        <input class="edit" name="name" type="text" value="<%- name %>" />
+      </div>
+      <div class="block">
+        <label>Description</label>
+        <input class="edit" name="name" type="text" value="<%- description %>" />
+      </div>
+      <div class="block">
+        <label>Start date</label>
+        <input class="edit" name="name" type="text" value="<%- startDate %>" />
+      </div>
+      <div class="block">
+        <label>End date</label>
+        <input class="edit" name="name" type="text" value="<%- endDate %>" />
+      </div>
+      <div class="block">
+        <label></label>
+        <input class="edit" name="name" type="submit" value="save" />
+      </div>
+  </script>
 
   <script type="text/template" id="session-template">
     <div class="view">

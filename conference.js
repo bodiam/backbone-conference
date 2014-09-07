@@ -1,6 +1,23 @@
 $(function(){
 
 // Model
+var Conference = Backbone.Model.extend({
+    defaults: function() {
+	return {
+	    name: 'Many Conference',
+	    description: '',
+	    startDate: new Date(),
+	    endDate: new Date()
+	};
+    },
+    localStorage: new Backbone.LocalStorage("conference-backbone"),
+    
+    initialize: function() {
+	this.sessions = new SessionList;
+    }
+});
+
+
 var Session = Backbone.Model.extend({
     defaults: function() {
 	return {
@@ -31,9 +48,22 @@ var SessionList = Backbone.Collection.extend({
     },
 });
 
-var sessions = new SessionList;
+// var sessions = new SessionList;
+
+var conference = new Conference;
 
 // Views
+
+var ConferenceView = Backbone.View.extend({
+    el: $("#conference-details"),
+    template: _.template($('#conference-template').html()),
+
+    render: function() {
+	this.$el.html(this.template(this.model.toJSON()));
+	this.input = this.$('.edit');
+        return this;
+    },
+});
 
 var SessionView = Backbone.View.extend({
     tagName: "li",
@@ -110,6 +140,7 @@ var AppView = Backbone.View.extend({
     // Delegated events for creating new items, and clearing completed ones.
     events: {
       "keypress #new-session":  "createOnEnter",
+      "click #saveConference": "saveConference",
       "click #clear-completed": "clearCompleted",
       "click #toggle-all": "toggleAllComplete"
     },
@@ -121,25 +152,27 @@ var AppView = Backbone.View.extend({
     initialize: function() {
 
       this.input = this.$("#new-session");
+      this.conferenceName = this.$("#conference-name");
       this.allCheckbox = this.$("#toggle-all")[0];
 
-      this.listenTo(sessions, 'add', this.addOne);
-      this.listenTo(sessions, 'reset', this.addAll);
-      this.listenTo(sessions, 'all', this.render);
+      this.listenTo(conference.sessions, 'add', this.addOne);
+      this.listenTo(conference.sessions, 'reset', this.addAll);
+      this.listenTo(conference.sessions, 'all', this.render);
+      this.listenTo(conference, 'all', this.render);
 
       this.footer = this.$('footer');
       this.main = $('#main');
 
-      sessions.fetch();
+      conference.sessions.fetch();
     },
 
    // Re-rendering the App just means refreshing the statistics -- the rest
     // of the app doesn't change.
     render: function() {
-      var done = sessions.done().length;
-      var remaining = sessions.remaining().length;
+      var done = conference.sessions.done().length;
+      var remaining = conference.sessions.remaining().length;
 
-      if (sessions.length) {
+      if (conference.sessions.length) {
         this.main.show();
         this.footer.show();
         this.footer.html(this.statsTemplate({done: done, remaining: remaining}));
@@ -160,7 +193,7 @@ var AppView = Backbone.View.extend({
 
     // Add all items in the **sessions** collection at once.
     addAll: function() {
-      sessions.each(this.addOne, this);
+      conference.sessions.each(this.addOne, this);
     },
 
     // If you hit return in the main input field, create new **Session** model,
@@ -169,25 +202,30 @@ var AppView = Backbone.View.extend({
       if (e.keyCode != 13) return;
       if (!this.input.val()) return;
 
-      sessions.create({title: this.input.val()});
+      conference.sessions.create({title: this.input.val()});
       this.input.val('');
+    },
+
+    saveConference: function(e) {
+       conference.set('name', $("#conference-name").val());
     },
 
     // Clear all done session items, destroying their models.
     clearCompleted: function() {
-      _.invoke(sessions.done(), 'destroy');
+      _.invoke(conference.sessions.done(), 'destroy');
       return false;
     },
 
     toggleAllComplete: function () {
       var done = this.allCheckbox.checked;
-      sessions.each(function (session) { session.save({'done': done}); });
+      conference.sessions.each(function (session) { session.save({'done': done}); });
     }
 
   });
 
   // Finally, we kick things off by creating the **App**.
-  var App = new AppView;
+  var app = new AppView;
+  var conferenceView = new ConferenceView({model:conference}).render();
 
 
 });
